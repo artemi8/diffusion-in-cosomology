@@ -123,7 +123,7 @@ def numpy_loader(path: str) -> np.ndarray:
     return cv2.imread(path, cv2.IMREAD_UNCHANGED)
 
 class DuplicateDim:
-    def __call__(tensor_arr) -> torch.Tensor:
+    def __call__(self, tensor_arr) -> torch.Tensor:
         return tensor_arr.repeat(3, 1, 1)
 
 #################################################################################
