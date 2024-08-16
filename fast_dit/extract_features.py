@@ -163,7 +163,7 @@ def main(args):
         transforms.RandomHorizontalFlip(),
         LogTransform(),
         GlobalMinMaxScaleTransform(global_min=0, global_max=33.57658438451577, min_val=0, max_val=1),
-        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5], inplace=True)
+        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5], inplace=True),
         duplicate_dimensions()
     ])
     dataset = ImageFolder(args.data_path, transform=transform, loader=numpy_loader)
