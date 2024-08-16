@@ -119,7 +119,7 @@ def center_crop_arr(pil_image, image_size):
     crop_x = (arr.shape[1] - image_size) // 2
     return Image.fromarray(arr[crop_y: crop_y + image_size, crop_x: crop_x + image_size])
 
-def numpy_loader(path: str) -> np.ndarray:
+def tiff_loader(path: str) -> np.ndarray:
     return cv2.imread(path, cv2.IMREAD_UNCHANGED)
 
 class DuplicateDim:
@@ -168,7 +168,7 @@ def main(args):
         transforms.Normalize(mean=[0.5], std=[0.5], inplace=True),
         DuplicateDim()
     ])
-    dataset = ImageFolder(args.data_path, transform=transform, loader=numpy_loader)
+    dataset = ImageFolder(args.data_path, transform=transform, loader=tiff_loader)
     sampler = DistributedSampler(
         dataset,        
         num_replicas=dist.get_world_size(),
