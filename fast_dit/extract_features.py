@@ -121,8 +121,9 @@ def center_crop_arr(pil_image, image_size):
 def numpy_loader(path: str) -> np.ndarray:
     return np.load(path)
 
-def duplicate_dimensions(tensor_arr) -> torch.Tensor:
-    return tensor_arr.repeat(3, 1, 1)
+class DuplicateDim:
+    def __call__(tensor_arr, x) -> torch.Tensor:
+        return tensor_arr.repeat(3, 1, 1)
 
 #################################################################################
 #                                  Training Loop                                #
@@ -164,7 +165,7 @@ def main(args):
         LogTransform(),
         GlobalMinMaxScaleTransform(global_min=0, global_max=33.57658438451577, min_val=0, max_val=1),
         transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5], inplace=True),
-        duplicate_dimensions()
+        DuplicateDim()
     ])
     dataset = ImageFolder(args.data_path, transform=transform, loader=numpy_loader)
     sampler = DistributedSampler(
