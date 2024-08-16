@@ -26,6 +26,7 @@ from time import time
 import argparse
 import logging
 import os
+import cv2
 
 from models import DiT_models
 from diffusion import create_diffusion
@@ -119,7 +120,7 @@ def center_crop_arr(pil_image, image_size):
     return Image.fromarray(arr[crop_y: crop_y + image_size, crop_x: crop_x + image_size])
 
 def numpy_loader(path: str) -> np.ndarray:
-    return np.load(path)
+    return cv2.imread(path, cv2.IMREAD_UNCHANGED)
 
 class DuplicateDim:
     def __call__(tensor_arr, x) -> torch.Tensor:
