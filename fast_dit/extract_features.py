@@ -118,6 +118,11 @@ def center_crop_arr(pil_image, image_size):
     crop_x = (arr.shape[1] - image_size) // 2
     return Image.fromarray(arr[crop_y: crop_y + image_size, crop_x: crop_x + image_size])
 
+def numpy_loader(path: str) -> np.ndarray:
+    return np.load(path)
+
+def duplicate_dimensions(tensor_arr) -> torch.Tensor:
+    return tensor_arr.repeat(3, 1, 1)
 
 #################################################################################
 #                                  Training Loop                                #
@@ -151,17 +156,19 @@ def main(args):
     vae = AutoencoderKL.from_pretrained(f"stabilityai/sd-vae-ft-{args.vae}").to(device)
 
     # Setup data:
+    #transforms.Lambda(lambda pil_image: center_crop_arr(pil_image, args.image_size)),
+
     transform = transforms.Compose([
-        transforms.Lambda(lambda pil_image: center_crop_arr(pil_image, args.image_size)),
-        transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
+        transforms.RandomHorizontalFlip(),
         LogTransform(),
         GlobalMinMaxScaleTransform(global_min=0, global_max=33.57658438451577, min_val=0, max_val=1),
         transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5], inplace=True)
+        duplicate_dimensions()
     ])
-    dataset = ImageFolder(args.data_path, transform=transform)
+    dataset = ImageFolder(args.data_path, transform=transform, loader=numpy_loader)
     sampler = DistributedSampler(
-        dataset,
+        dataset,        
         num_replicas=dist.get_world_size(),
         rank=rank,
         shuffle=False,

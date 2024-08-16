@@ -1,3 +1,9 @@
-samples
-results
-__pycache__
+#Data
+Dataset/
+
+# Repos
+diffusion_model_learning/
+
+fast_dit/samples
+fast_dit/results
+fast_dit/__pycache__
