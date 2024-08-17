@@ -126,6 +126,19 @@ class DuplicateDim:
     def __call__(self, tensor_arr) -> torch.Tensor:
         return tensor_arr.repeat(3, 1, 1)
 
+class ToTensorNoScaling:
+    def __call__(self, x):
+        # Check if the input is a NumPy array
+        if isinstance(x, np.ndarray):
+            # Convert the NumPy array to a torch tensor
+            tensor = torch.from_numpy(x)
+            # If the NumPy array has shape (H, W, C), permute it to (C, H, W)
+            if len(tensor.shape) == 3:  # Check if there are 3 dimensions (H, W, C)
+                tensor = tensor.permute(2, 0, 1)
+            return tensor #tensor.float()
+        else:
+            raise TypeError("Input should be a NumPy array")
+
 #################################################################################
 #                                  Training Loop                                #
 #################################################################################
@@ -161,13 +174,14 @@ def main(args):
     #transforms.Lambda(lambda pil_image: center_crop_arr(pil_image, args.image_size)),
 
     transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.RandomHorizontalFlip(),
-        LogTransform(),
-        GlobalMinMaxScaleTransform(global_min=0, global_max=33.57658438451577, min_val=0, max_val=1),
-        transforms.Normalize(mean=[0.5], std=[0.5], inplace=True),
-        DuplicateDim()
+            ToTensorNoScaling(),
+            transforms.RandomHorizontalFlip(),
+            LogTransform(),
+            GlobalMinMaxScaleTransform(global_min=0, global_max=33.57658438451577, min_val=0, max_val=1),
+            DuplicateDim(),
+            transforms.Normalize(mean=[0.5], std=[0.5], inplace=True)
     ])
+    
     dataset = ImageFolder(args.data_path, transform=transform, loader=tiff_loader)
     sampler = DistributedSampler(
         dataset,        
