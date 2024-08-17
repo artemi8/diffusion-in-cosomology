@@ -31,26 +31,14 @@ import cv2
 from models import DiT_models
 from diffusion import create_diffusion
 from diffusers.models import AutoencoderKL
+from ditutils.transforms import GlobalMinMaxScaleTransform, Log1pTransform, DuplicateDim, ToTensorNoScaling
 #import numpy as np
 
 #################################################################################
 #                             Training Helper Functions                         #
 #################################################################################
 
-class LogTransform:
-    def __call__(self, x):
-        return torch.log1p(x)
 
-class GlobalMinMaxScaleTransform:
-    def __init__(self, global_min, global_max, min_val=0, max_val=1):
-        self.global_min = global_min
-        self.global_max = global_max
-        self.min_val = min_val
-        self.max_val = max_val
-    
-    def __call__(self, x):
-        scaled_x = (x - self.global_min) / (self.global_max - self.global_min)
-        return scaled_x * (self.max_val - self.min_val) + self.min_val
 
 
 @torch.no_grad()
@@ -122,22 +110,7 @@ def center_crop_arr(pil_image, image_size):
 def tiff_loader(path: str) -> np.ndarray:
     return cv2.imread(path, cv2.IMREAD_UNCHANGED)
 
-class DuplicateDim:
-    def __call__(self, tensor_arr) -> torch.Tensor:
-        return tensor_arr.repeat(3, 1, 1)
 
-class ToTensorNoScaling:
-    def __call__(self, x):
-        # Check if the input is a NumPy array
-        if isinstance(x, np.ndarray):
-            # Convert the NumPy array to a torch tensor
-            tensor = torch.from_numpy(x)
-            # If the NumPy array has shape (H, W, C), permute it to (C, H, W)
-            if len(tensor.shape) == 3:  # Check if there are 3 dimensions (H, W, C)
-                tensor = tensor.permute(2, 0, 1)
-            return tensor #tensor.float()
-        else:
-            raise TypeError("Input should be a NumPy array")
 
 #################################################################################
 #                                  Training Loop                                #
@@ -176,7 +149,7 @@ def main(args):
     transform = transforms.Compose([
             ToTensorNoScaling(),
             transforms.RandomHorizontalFlip(),
-            LogTransform(),
+            Log1pTransform(),
             GlobalMinMaxScaleTransform(global_min=0, global_max=33.57658438451577, min_val=0, max_val=1),
             DuplicateDim(),
             transforms.Normalize(mean=[0.5], std=[0.5], inplace=True)

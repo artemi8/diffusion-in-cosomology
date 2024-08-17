@@ -24,7 +24,7 @@ def convert_npy_to_tiff(src_dir, dst_dir):
             tiff_image = Image.fromarray(npy_data)
             tiff_image.save(tiff_path)
 
-     print(f"Converted Files to TIFF format!")
+    print(f"Converted Files to TIFF format!")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert .npy files to .tiff format.")
