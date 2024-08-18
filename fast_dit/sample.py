@@ -80,11 +80,19 @@ def main(args):
         to_numpy                                         
     ])
 
-    transformed_samples = np.squeeze(inverse_transform(samples), axis=0)[0,:,:]
+    transformed_samples = np.squeeze(inverse_transform(samples), axis=0)
+    channel_used = 1
+    
+    folder_path='./sampled_arrays/'
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+        print(f"Folder created: {folder_path}")
+    
+    np.save(os.path.join(folder_path, 'samples.npy'), transformed_samples)
 
     org_img = np.load(os.path.join(org_img_path, random.sample(orgs_images, k=1)[0]))
 
-    compare_power_spectra(image_path1=org_img, image_path2=transformed_samples,
+    compare_power_spectra(image_path1=org_img, image_path2=transformed_samples[channel_used,:,:],
                           box_size=1000, MAS='CIC', array_in=True,
                            single_eval=True, plot_save_path='./spectrum_comparison.jpg',
                              terminal_out=True)

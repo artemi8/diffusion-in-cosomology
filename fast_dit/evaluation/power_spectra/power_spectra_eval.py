@@ -53,11 +53,11 @@ def compare_power_spectra(image_path1, image_path2, box_size, MAS, array_in=Fals
 
         # Plot using plotext for terminal output
     if terminal_out:
-        pltxt.plot(k1, Pk1, label="Power Spectrum 1")
-        pltxt.plot(k2, Pk2, label="Power Spectrum 2")
+        pltxt.plot(k1, Pk1, label="Original")
+        pltxt.plot(k2, Pk2, label="Generated")
         pltxt.title("Power Spectra Comparison (Terminal)")
-        pltxt.xlabel("Wavenumber / Frequency")
-        pltxt.ylabel("Power")
+        pltxt.xlabel("k (h/Mpc)")
+        pltxt.ylabel("Power Spectrum P(k) [(Mpc/h)^2]")
         pltxt.show()
     
     if plot_save_path:
