@@ -82,7 +82,7 @@ def main(args):
 
     transformed_samples = np.squeeze(inverse_transform(samples), axis=0)
     channel_used = 1
-    
+
     folder_path='./sampled_arrays/'
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
@@ -94,7 +94,7 @@ def main(args):
 
     compare_power_spectra(image_path1=org_img, image_path2=transformed_samples[channel_used,:,:],
                           box_size=1000, MAS='CIC', array_in=True,
-                           single_eval=True, plot_save_path='./spectrum_comparison.jpg',
+                           single_eval=True, plot_save_path=os.path.join(folder_path,'spectrum_comparison.jpg'),
                              terminal_out=True)
 
 
