@@ -58,7 +58,6 @@ def compare_power_spectra(image_path1, image_path2, box_size, MAS, array_in=Fals
         pltxt.title("Power Spectra Comparison (Terminal)")
         pltxt.xlabel("Wavenumber / Frequency")
         pltxt.ylabel("Power")
-        pltxt.legend(True)
         pltxt.show()
     
     if plot_save_path:
