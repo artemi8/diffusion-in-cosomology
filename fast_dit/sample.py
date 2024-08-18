@@ -80,7 +80,7 @@ def main(args):
         to_numpy                                         
     ])
 
-    transformed_samples = inverse_transform(samples)
+    transformed_samples = np.squeeze(inverse_transform(samples), axis=0)[0,:,:]
 
     org_img = np.load(os.path.join(org_img_path, random.sample(orgs_images, k=1)[0]))
 
