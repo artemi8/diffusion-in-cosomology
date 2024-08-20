@@ -162,10 +162,10 @@ def main(args):
         total += global_batch_size
 
     # Make sure all processes have finished saving their samples before attempting to convert to .npz
-    dist.barrier()
-    if rank == 0:
-        create_npz_from_sample_folder(sample_folder_dir, args.num_fid_samples)
-        print("Done.")
+    # dist.barrier()
+    # if rank == 0:
+    #     create_npz_from_sample_folder(sample_folder_dir, args.num_fid_samples)
+    #     print("Done.")
     dist.barrier()
     dist.destroy_process_group()
 
