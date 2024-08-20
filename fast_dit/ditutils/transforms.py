@@ -24,10 +24,10 @@ class InverseNormalize:
 
 class GlobalMinMaxScaleTransform:
     def __init__(self, global_min, global_max, min_val=0, max_val=1):
-        self.global_min = global_min.to('cuda')
-        self.global_max = global_max.to('cuda')
-        self.min_val = min_val.to('cuda')
-        self.max_val = max_val.to('cuda')
+        self.global_min = global_min
+        self.global_max = global_max
+        self.min_val = min_val
+        self.max_val = max_val
     
     def __call__(self, x):
         scaled_x = (x - self.global_min) / (self.global_max - self.global_min)
