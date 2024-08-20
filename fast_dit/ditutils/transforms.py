@@ -60,4 +60,8 @@ class ToTensorNoScaling:
 
 def to_numpy(tensor):
     # Ensure the tensor is on CPU and detached from the computation graph
-    return tensor.cpu().detach().numpy()
+    return tensor.permute(0, 2, 3, 1).cpu().detach().numpy()
+
+def clip_and_average(arr):
+    arr = np.mean(arr, axis=3)
+    return np.clip(arr, 0, 1e13)*2

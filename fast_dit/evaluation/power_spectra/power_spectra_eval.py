@@ -38,6 +38,18 @@ def get_power_spectra(file, box_size, MAS, array_in=False, print_outs=False):
     
     return k, Pk, Nmodes
 
+def compute_average_power_spectrum(image_paths, box_size, MAS):
+    all_Pk = []
+    for image_path in image_paths:
+        k, Pk, _ = get_power_spectra(image_path, box_size, MAS)
+        all_Pk.append(Pk)
+    
+    # Convert list to numpy array and compute the mean across all images
+    all_Pk = np.array(all_Pk)
+    mean_Pk = np.mean(all_Pk, axis=0)
+    
+    return k, mean_Pk
+
 
 def compare_power_spectra(image_path1, image_path2, box_size, MAS, array_in=False,
                            single_eval=True, plot_save_path='./spectrum_comparison.jpg',
