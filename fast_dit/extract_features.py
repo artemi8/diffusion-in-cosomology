@@ -168,10 +168,10 @@ def main(args):
             x = vae.encode(x).latent_dist.sample().mul_(0.18215)
             
         x = x.detach().cpu().numpy()    # (1, 4, 32, 32)
-        np.save(f'{args.features_path}/imagenet256_features/{train_steps}.npy', x)
+        np.save(f'{args.features_path}/imagenet256_features/{rank}-{train_steps}.npy', x)
 
         y = y.detach().cpu().numpy()    # (1,)
-        np.save(f'{args.features_path}/imagenet256_labels/{train_steps}.npy', y)
+        np.save(f'{args.features_path}/imagenet256_labels/{rank}-{train_steps}.npy', y)
             
         train_steps += 1
         print(train_steps)
