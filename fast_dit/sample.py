@@ -11,20 +11,12 @@ import torch
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
 from torchvision.utils import save_image
-from torchvision import transforms
 from diffusion import create_diffusion
 from diffusers.models import AutoencoderKL
 from download import find_model
 from models import DiT_models
 import argparse
-from evaluation import compare_power_spectra
-from ditutils.transforms import GlobalMinMaxScaleTransform, Log1pTransform, InverseNormalize, to_numpy
-import random
-import os
-import numpy as np
 
-org_img_path = '/home/ppxsa4/data/np_data/class1/'
-orgs_images = os.listdir(org_img_path)
 
 def main(args):
     # Setup PyTorch:
@@ -71,32 +63,6 @@ def main(args):
     )
     samples, _ = samples.chunk(2, dim=0)  # Remove null class samples
     samples = vae.decode(samples / 0.18215).sample
-
-    # Compose the inverse transformations
-    inverse_transform = transforms.Compose([
-        InverseNormalize(mean=[0.5], std=[0.5]),                       
-        GlobalMinMaxScaleTransform(global_min=0, global_max=33.57658438451577).inverse_transform,  
-        Log1pTransform().inverse_transform,
-        to_numpy                                         
-    ])
-
-    transformed_samples = np.squeeze(inverse_transform(samples), axis=0)
-    channel_used = 1
-
-    folder_path='./sampled_arrays/'
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
-        print(f"Folder created: {folder_path}")
-    
-    np.save(os.path.join(folder_path, 'samples.npy'), transformed_samples)
-
-    org_img = np.load(os.path.join(org_img_path, random.sample(orgs_images, k=1)[0]))
-
-    compare_power_spectra(image_path1=org_img, image_path2=transformed_samples[channel_used,:,:],
-                          box_size=1000, MAS='CIC', array_in=True,
-                           single_eval=True, plot_save_path=os.path.join(folder_path,'spectrum_comparison.jpg'),
-                             terminal_out=True)
-
 
     # Save and display images:
     save_image(samples, "sample.png", nrow=4, normalize=True, value_range=(-1, 1))
