@@ -68,3 +68,8 @@ def clip_and_average(arr):
     #TODO Increasing power two times as post processing, should be changed to 
     # Band wise weighting to smoother enhancement
     return np.clip(arr, 0, 1e13)
+
+def channel_average(arr):
+    return np.mean(arr, axis=3)
+    
+

@@ -23,7 +23,7 @@ from PIL import Image
 import numpy as np
 import math
 import argparse
-from ditutils.transforms import GlobalMinMaxScaleTransform, Log1pTransform, InverseNormalize, to_numpy, clip_and_average
+from ditutils.transforms import GlobalMinMaxScaleTransform, Log1pTransform, InverseNormalize, to_numpy, channel_average, clip_and_average
 import numpy as np
 from evaluation import compare_power_spectra
 from torchvision import transforms
@@ -145,7 +145,7 @@ def main(args):
         GlobalMinMaxScaleTransform(global_min=0, global_max=33.57658438451577).inverse_transform,  
         Log1pTransform().inverse_transform,
         to_numpy,
-        clip_and_average                                         
+        channel_average                                         
         ])
         samples = inverse_transform(samples)
         # samples = torch.clamp(127.5 * samples + 128.0, 0, 255).permute(0, 2, 3, 1).to("cpu", dtype=torch.uint8).numpy()
