@@ -94,8 +94,9 @@ def main(args):
                   f"cfg-{args.cfg_scale}-seed-{args.global_seed}"
     sample_folder_dir = f"{args.sample_dir}/{folder_name}"
     npy_folder_directory = os.path.join(sample_folder_dir, 'numpy_arrays')
+    images_folder_directory = os.path.join(sample_folder_dir, 'images')
     if rank == 0:
-        os.makedirs(sample_folder_dir, exist_ok=True)
+        os.makedirs(images_folder_directory, exist_ok=True)
         os.makedirs(npy_folder_directory, exist_ok=True)
         print(f"Saving .png samples at {sample_folder_dir}")
     dist.barrier()
@@ -153,9 +154,8 @@ def main(args):
         # Save samples to disk as individual .png files
         for i, sample in enumerate(samples):
             index = i * dist.get_world_size() + rank + total
-            npy_folder_directory
-            np.save(f"{sample_folder_dir}/{index:06d}.npy", sample)
-            plt.imsave(f"{sample_folder_dir}/{index:06d}.png",
+            np.save(f"{npy_folder_directory}/{index:06d}.npy", sample)
+            plt.imsave(f"{images_folder_directory}/{index:06d}.png",
                         sample, cmap='gnuplot', vmin=0.0, vmax=1e13)
 
             # Image.fromarray(sample).save(f"{sample_folder_dir}/{index:06d}.png")
