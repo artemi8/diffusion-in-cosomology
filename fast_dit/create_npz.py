@@ -13,7 +13,7 @@ def create_npz_from_sample_folder(sample_dir, num=50_000):
     real_image_paths = [os.path.join(sample_dir, img) for img in os.listdir(sample_dir)]
 
     for sample_img in tqdm(real_image_paths, desc="Building .npz file from samples"):
-        sample_pil = Image.open(sample_img)
+        sample_pil = Image.open(sample_img).convert("RGB")
         sample_np = np.asarray(sample_pil).astype(np.uint8)
         samples.append(sample_np)
     samples = np.stack(samples)
