@@ -4,6 +4,7 @@ from PIL import Image
 import numpy as np
 import argparse
 import os
+import random
 
 def create_npz_from_sample_folder(sample_dir, num=50_000):
     """
@@ -11,7 +12,7 @@ def create_npz_from_sample_folder(sample_dir, num=50_000):
     """
     samples = []
     real_image_paths = [os.path.join(sample_dir, img) for img in os.listdir(sample_dir)]
-
+    real_image_paths = random.sample(real_image_paths, k=num)
     for sample_img in tqdm(real_image_paths, desc="Building .npz file from samples"):
         sample_pil = Image.open(sample_img).convert("RGB")
         sample_np = np.asarray(sample_pil).astype(np.uint8)
