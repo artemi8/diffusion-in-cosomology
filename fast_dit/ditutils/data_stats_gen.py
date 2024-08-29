@@ -19,6 +19,5 @@ def calculate_min_max_from_npy_folder(folder_path):
     # Find the overall min and max
     global_min = min(all_min_values)
     global_max = max(all_max_values)
-    print(all_max_values)
 
     return global_min, global_max

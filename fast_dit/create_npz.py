@@ -29,6 +29,6 @@ def create_npz_from_sample_folder(sample_dir, num=50_000):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--sample_dir", type=str)
-    parser.add_argument("--num_samples",  type=int,  default=4000)
+    parser.add_argument("--num_samples",  type=int,  default=5000)
     args = parser.parse_args()
     create_npz_from_sample_folder(args.sample_dir, args.num_samples)
