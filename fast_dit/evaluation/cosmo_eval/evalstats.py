@@ -248,7 +248,7 @@ def generate_periodicity_plot(arr, num_samples, save_path):
      
     for i in indexes:
         temp_save_path = os.path.join(save_path, f'{i}.png')
-        periodicity_plot(arr[i,:,:,:], save_path)
+        periodicity_plot(arr[i,:,:,:], temp_save_path)
 
 
 if __name__ == "__main__":
