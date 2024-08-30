@@ -260,8 +260,8 @@ if __name__ == "__main__":
     parser.add_argument("-s","--save_path",  type=str)
     parser.add_argument("-pmn","--pixel_min",  type=int, default=10)
     parser.add_argument("-pmx","--pixel_max",  type=int, default=150)
-    parser.add_argument('--box_size', type=int, required=True, help='Box size of the simuation it is sliced from')
-    parser.add_argument('--MAS', type=str, required=True, help='Mass Assignment Scheme used in while fetching the simulated data')
+    parser.add_argument('--box_size', type=int, required=True, default=1000, help='Box size of the simuation it is sliced from')
+    parser.add_argument('--MAS', type=str, required=True, default='CIC', help='Mass Assignment Scheme used in while fetching the simulated data')
 
     args = parser.parse_args()
 
