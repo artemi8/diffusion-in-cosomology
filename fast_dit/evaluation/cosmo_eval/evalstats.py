@@ -7,7 +7,7 @@ from numpy.fft import *
 from quantimpy import minkowski as mk
 import argparse
 import Pk_library as PKL
-
+import seaborn as sns
 
 def gen_samplelist(datapath_kwargs:dict, num_samples, power_spectrum=False):
     
@@ -145,16 +145,50 @@ def calc_1dps_img2d(kvals, img, to_plot=True, smoothed=0.5):
     mean = np.vectorize(filt)(kvals)
     return mean
 
-def mean_absolute_fractional_difference(k1, average_Pk1, k2, average_Pk2):
-    if not np.array_equal(k1, k2):
-        raise ValueError("The wavenumbers k1 and k2 must be identical.")
+def mean_absolute_fractional_difference(Pk1, Pk2, save_path):
+    
+    average_Pk1 = np.mean(Pk1, axis=0)
+    average_Pk2 = np.mean(Pk2, axis=0)
+    
     
     fractional_diff = np.abs(average_Pk2 - average_Pk1) / average_Pk1
     
     mean_abs_frac_diff = np.mean(fractional_diff)
+
+    save_path = os.path.join(save_path, 'MAFD.txt')
+
+    with open(save_path, 'w') as f:
+        f.write(f'MAFD : {mean_abs_frac_diff}')
+
     
     return mean_abs_frac_diff
 
+def save_power_spectrum_ratio(k1, Pk1, Pk2, save_path):
+
+    average_Pk1 = np.mean(Pk1, axis=0)
+    average_Pk2 = np.mean(Pk2, axis=0)
+
+    save_path = os.path.join(save_path, "power_spectrum_ratio.png")
+    
+    sns.set(style="whitegrid")  # Set the style
+    plt.figure(figsize=(10, 6))
+
+
+    # Calculate the ratio of the original power spectrum to the generated power spectrum
+    ratio = average_Pk1 / average_Pk2
+
+    # Plot the ratio
+    plt.plot(k, ratio, color='green', linestyle='-', linewidth=2)
+    plt.axhline(y=1, color='black', linestyle='--', linewidth=1)
+    plt.xlabel('Wavenumber $k$ (h/Mpc)', fontsize=14)
+    plt.ylabel('Power Spectrum Ratio [$P_{original}(k) / P_{generated}(k)$ ]', fontsize=12)
+    plt.title('Power Spectrum Ratio', fontsize=16)
+    plt.xscale('log')
+    plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+    plt.tight_layout()
+    # plt.show()
+    plt.savefig(save_path)
+    plt.close()
 
 def plot_mink_functionals(samplist, gs_vals, names, cols, savefig_dict={}):
     sampwise_minkmean  = []
@@ -216,6 +250,9 @@ def periodicity_plot(img_array, save_path):
 def generate_ps(ps_samp_list, save_path, box_size=1000, MAS='CIC'):
 
     kvals, powspeclist = get_powspec_for_samples(ps_samp_list, box_size, MAS)
+
+    mean_absolute_fractional_difference(powspeclist[0], powspeclist[1], save_path)
+    save_power_spectrum_ratio(kvals, powspeclist[0], powspeclist[1], save_path)
 
     #Saving with log=True and k2pk=False
     plot_ps_samples(kvals, powspeclist, names=['Real Fields', 'Sampled Fields'], 
