@@ -163,7 +163,7 @@ def mean_absolute_fractional_difference(Pk1, Pk2, save_path):
     
     return mean_abs_frac_diff
 
-def save_power_spectrum_ratio(k1, Pk1, Pk2, save_path):
+def save_power_spectrum_ratio(k, Pk1, Pk2, save_path):
 
     average_Pk1 = np.mean(Pk1, axis=0)
     average_Pk2 = np.mean(Pk2, axis=0)
@@ -311,20 +311,20 @@ if __name__ == "__main__":
     datapath_kwargs = {'real_sample_dir': args.real_samples,
                    'gen_sample_dir' : args.gen_samples}
     
-    samp_list = gen_samplelist(datapath_kwargs=datapath_kwargs ,
-                           num_samples=args.num_samples, 
-                           power_spectrum=False)
+    # samp_list = gen_samplelist(datapath_kwargs=datapath_kwargs ,
+    #                        num_samples=args.num_samples, 
+    #                        power_spectrum=False)
     
-    print(f'Generating statistics using following configuation : {args}')
+    # print(f'Generating statistics using following configuation : {args}')
 
-    print('Generating pixel Intesity Histogram')
-    generate_PIH(samp_list, args.pixel_min, args.pixel_max, args.save_path)
+    # print('Generating pixel Intesity Histogram')
+    # generate_PIH(samp_list, args.pixel_min, args.pixel_max, args.save_path)
 
-    print(f'Generating periodicity plots for {args.periodicity_num_samples} samples')
-    generate_periodicity_plot(samp_list[1], args.periodicity_num_samples, args.save_path)
+    # print(f'Generating periodicity plots for {args.periodicity_num_samples} samples')
+    # generate_periodicity_plot(samp_list[1], args.periodicity_num_samples, args.save_path)
 
-    print('Generating Minkowski functionals')
-    generate_mink_funcs(samp_list, args.pixel_min, args.pixel_max, args.save_path)
+    # print('Generating Minkowski functionals')
+    # generate_mink_funcs(samp_list, args.pixel_min, args.pixel_max, args.save_path)
 
     samp_list = gen_samplelist(datapath_kwargs=datapath_kwargs,
                            num_samples=args.num_samples, 
