@@ -6,6 +6,8 @@ from PIL import Image
 from numpy.fft import *
 from quantimpy import minkowski as mk
 import argparse
+import Pk_library as PKL
+
 
 def gen_samplelist(datapath_kwargs:dict, num_samples, power_spectrum=False):
     
@@ -105,21 +107,28 @@ def plot_ps_samples(kvals, samplist, names, cols=['b', 'r'], logscale=True, k2pk
     return
 
 
-def get_powspec_for_samples(samplist):
+def get_powspec_for_samples(samplist, box_size=1000, MAS='CIC'):
     '''
     :param samplist: list of np arrays with shape N_img, Nx, Nx
     :param hist_kwargs: bins, range, density
     :return:
     '''
+
+    BoxSize = box_size #1000.0  #Mpc/h
+    MAS     = MAS #MAS used to create the image; 'NGP', 'CIC', 'TSC', 'PCS' o 'None'
+    threads = 1      #number of openmp threads   
+
     ps_list = []
     Nx = samplist[0].shape[-1]
-    kvals = np.arange(0, Nx/2)
+    kvals = []
     for samp in samplist:
         assert len(samp.shape)==3
         assert samp.shape[-1]==Nx
         assert samp.shape[-2]==Nx
-        pssamp = np.vstack([calc_1dps_img2d(kvals, samp[ci, ...], to_plot=False, smoothed=0.25) for ci in range(samp.shape[0])])
-        ps_list.append(pssamp)
+        Pk2D = PKL.Pk_plane(samp, BoxSize, MAS, threads)
+        k_vals = Pk2D.k      #k in h/Mpc
+        ps_list.append(Pk2D.Pk)     #Pk in (Mpc/h)^2
+
     return kvals, ps_list
 
 def calc_1dps_img2d(kvals, img, to_plot=True, smoothed=0.5):
@@ -131,6 +140,16 @@ def calc_1dps_img2d(kvals, img, to_plot=True, smoothed=0.5):
     filt = lambda r: impf[(R >= r - smoothed) & (R < r + smoothed)].mean()
     mean = np.vectorize(filt)(kvals)
     return mean
+
+def mean_absolute_fractional_difference(k1, average_Pk1, k2, average_Pk2):
+    if not np.array_equal(k1, k2):
+        raise ValueError("The wavenumbers k1 and k2 must be identical.")
+    
+    fractional_diff = np.abs(average_Pk2 - average_Pk1) / average_Pk1
+    
+    mean_abs_frac_diff = np.mean(fractional_diff)
+    
+    return mean_abs_frac_diff
 
 
 def plot_mink_functionals(samplist, gs_vals, names, cols, savefig_dict={}):
@@ -181,9 +200,18 @@ def generate_PIH(samp_list, RANGEMIN, RANGEMAX, save_path):
             cols=['b', 'r'], with_err=True,
               savefig_dict={'save_path': os.path.join(save_path, 'pix_hist_ckp60.pdf')})
     
-def generate_ps(ps_samp_list, save_path):
+def periodicity_plot(img_array, save_path):
 
-    kvals, powspeclist = get_powspec_for_samples(ps_samp_list)
+    repeats_x = 3
+    repeats_y = 3
+
+    tiled_img_array = np.tile(img_array, (repeats_y, repeats_x, 1))
+
+    plt.imsave(save_path, tiled_img_array)
+    
+def generate_ps(ps_samp_list, save_path, box_size=1000, MAS='CIC'):
+
+    kvals, powspeclist = get_powspec_for_samples(ps_samp_list, box_size, MAS)
 
     #Saving with log=True and k2pk=False
     plot_ps_samples(kvals, powspeclist, names=['Real Fields', 'Sampled Fields'], 
@@ -202,7 +230,7 @@ def generate_ps(ps_samp_list, save_path):
                      savefig_dict={'save_path': os.path.join(save_path, 'k2pk_64_ckp60.png'),
                                    'figsize': [5, 4]})
 
-def mink_funcs(samp_list, RANGEMIN, RANGEMAX, save_path):
+def generate_mink_funcs(samp_list, RANGEMIN, RANGEMAX, save_path):
 
     smm, sms = plot_mink_functionals(samp_list, 
                         gs_vals = np.linspace(RANGEMIN, RANGEMAX, 50),
@@ -210,16 +238,30 @@ def mink_funcs(samp_list, RANGEMIN, RANGEMAX, save_path):
                         savefig_dict={'save_path': os.path.join(save_path, 'mink_funcs_ckp60.pdf')})
 
             
-    
+def generate_periodicity_plot(arr, num_samples, save_path):
+
+    assert arr.shape[0] >= num_samples
+
+    indexes = random.sample(range(0, arr.shape[0]), k=num_samples)
+    save_path = os.path.join(save_path, 'periodicity_plots')
+    os.makedirs(save_path, exist_ok=True)
+     
+    for i in indexes:
+        temp_save_path = os.path.join(save_path, f'{i}.png')
+        periodicity_plot(arr[i,:,:,:], save_path)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--real_samples", type=str)
-    parser.add_argument("--gen_samples",  type=str)
-    parser.add_argument("--num_samples",  type=int, default=100)
-    parser.add_argument("--save_path",  type=str)
-    parser.add_argument("--pixel_min",  type=int, default=10)
-    parser.add_argument("--pixel_max",  type=int, default=150)
+    parser.add_argument("-rs","--real_samples", type=str)
+    parser.add_argument("-gs","--gen_samples",  type=str)
+    parser.add_argument("-ns","--num_samples",  type=int, default=100)
+    parser.add_argument("-pns","--periodicity_num_samples",  type=int, default=5)
+    parser.add_argument("-s","--save_path",  type=str)
+    parser.add_argument("-pmn","--pixel_min",  type=int, default=10)
+    parser.add_argument("-pmx","--pixel_max",  type=int, default=150)
+    parser.add_argument('--box_size', type=int, required=True, help='Box size of the simuation it is sliced from')
+    parser.add_argument('--MAS', type=str, required=True, help='Mass Assignment Scheme used in while fetching the simulated data')
 
     args = parser.parse_args()
 
@@ -231,19 +273,23 @@ if __name__ == "__main__":
     samp_list = gen_samplelist(datapath_kwargs=datapath_kwargs ,
                            num_samples=args.num_samples, 
                            power_spectrum=False)
+    
     print(f'Generating statistics using following configuation : {args}')
 
     print('Generating pixel Intesity Histogram')
     generate_PIH(samp_list, args.pixel_min, args.pixel_max, args.save_path)
 
+    print(f'Generating periodicity plots for {args.periodicity_num_samples} samples')
+    generate_periodicity_plot(samp_list[1], args.periodicity_num_samples, args.save_path)
+
     print('Generating Minkowski functionals')
-    mink_funcs(samp_list, args.pixel_min, args.pixel_max, args.save_path)
+    generate_mink_funcs(samp_list, args.pixel_min, args.pixel_max, args.save_path)
 
     samp_list = gen_samplelist(datapath_kwargs=datapath_kwargs,
                            num_samples=args.num_samples, 
                            power_spectrum=True)
     
     print('Generating Power spectrum')
-    generate_ps(samp_list, args.save_path)
+    generate_ps(samp_list, args.save_path, args.box_size, args.MAS)
     
     
