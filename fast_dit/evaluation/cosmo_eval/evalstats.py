@@ -130,7 +130,8 @@ def get_powspec_for_samples(samplist, box_size=1000, MAS='CIC'):
             Pk2D = PKL.Pk_plane(single_samp.astype('float32'), BoxSize, MAS, threads)
             k_vals = Pk2D.k      #k in h/Mpc
             temp_pk.append(Pk2D.Pk)     #Pk in (Mpc/h)^2
-        ps_list.append(np.mean(np.array(temp_pk), axis=0))
+        # ps_list.append(np.mean(np.array(temp_pk), axis=0))
+        ps_list.append(temp_pk)
 
     return kvals, ps_list
 
