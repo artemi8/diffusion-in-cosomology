@@ -223,6 +223,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    os.makedirs(args.save_path, exist_ok=True)
+    
     datapath_kwargs = {'real_sample_dir': args.real_samples,
                    'gen_sample_dir' : args.gen_samples}
     
