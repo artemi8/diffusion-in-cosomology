@@ -311,20 +311,20 @@ if __name__ == "__main__":
     datapath_kwargs = {'real_sample_dir': args.real_samples,
                    'gen_sample_dir' : args.gen_samples}
     
-    # samp_list = gen_samplelist(datapath_kwargs=datapath_kwargs ,
-    #                        num_samples=args.num_samples, 
-    #                        power_spectrum=False)
+    samp_list = gen_samplelist(datapath_kwargs=datapath_kwargs ,
+                           num_samples=args.num_samples, 
+                           power_spectrum=False)
     
-    # print(f'Generating statistics using following configuation : {args}')
+    print(f'Generating statistics using following configuation : {args}')
 
-    # print('Generating pixel Intesity Histogram')
-    # generate_PIH(samp_list, args.pixel_min, args.pixel_max, args.save_path)
+    print('Generating pixel Intesity Histogram')
+    generate_PIH(samp_list, args.pixel_min, args.pixel_max, args.save_path)
 
-    # print(f'Generating periodicity plots for {args.periodicity_num_samples} samples')
-    # generate_periodicity_plot(samp_list[1], args.periodicity_num_samples, args.save_path)
+    print(f'Generating periodicity plots for {args.periodicity_num_samples} samples')
+    generate_periodicity_plot(samp_list[1], args.periodicity_num_samples, args.save_path)
 
-    # print('Generating Minkowski functionals')
-    # generate_mink_funcs(samp_list, args.pixel_min, args.pixel_max, args.save_path)
+    print('Generating Minkowski functionals')
+    generate_mink_funcs(samp_list, args.pixel_min, args.pixel_max, args.save_path)
 
     samp_list = gen_samplelist(datapath_kwargs=datapath_kwargs,
                            num_samples=args.num_samples, 
