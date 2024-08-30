@@ -133,7 +133,7 @@ def get_powspec_for_samples(samplist, box_size=1000, MAS='CIC'):
         # ps_list.append(np.mean(np.array(temp_pk), axis=0))
         ps_list.append(temp_pk)
 
-    return kvals, ps_list
+    return kvals, np.array(ps_list)
 
 def calc_1dps_img2d(kvals, img, to_plot=True, smoothed=0.5):
     Nx = img.shape[0]
