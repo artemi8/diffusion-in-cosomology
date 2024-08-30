@@ -119,15 +119,18 @@ def get_powspec_for_samples(samplist, box_size=1000, MAS='CIC'):
     threads = 1      #number of openmp threads   
 
     ps_list = []
-    Nx = samplist[0].shape[-1]
+    # Nx = samplist[0].shape[-1]
     kvals = []
     for samp in samplist:
         assert len(samp.shape)==3
-        assert samp.shape[-1]==Nx
-        assert samp.shape[-2]==Nx
-        Pk2D = PKL.Pk_plane(samp, BoxSize, MAS, threads)
-        k_vals = Pk2D.k      #k in h/Mpc
-        ps_list.append(Pk2D.Pk)     #Pk in (Mpc/h)^2
+        temp_pk = []
+        for single_samp in samp:
+            # assert samp.shape[-1]==Nx
+            # assert samp.shape[-2]==Nx
+            Pk2D = PKL.Pk_plane(single_samp, BoxSize, MAS, threads)
+            k_vals = Pk2D.k      #k in h/Mpc
+            temp_pk.append(Pk2D.Pk)     #Pk in (Mpc/h)^2
+        ps_list.append(np.mean(np.array(temp_pk), axis=0))
 
     return kvals, ps_list
 
