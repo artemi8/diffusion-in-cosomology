@@ -99,7 +99,7 @@ def plot_ps_samples(kvals, samplist, names, cols=['b', 'r'], logscale=True, k2pk
     if k2pk:
         plt.ylabel(r'$k^2P(k)$')
         if not logscale:
-            plt.ylim(1000, 170000)
+            plt.ylim(-500, 170000)
         else:
             plt.ylim(bottom=None, top=10**6)
     else:
@@ -230,7 +230,7 @@ def plot_mink_functionals(samplist, gs_vals, names, cols, savefig_dict={}):
             ax[iax].set_ylim(0.00, 0.08)  # Set y-axis limit for M1(g)
         else:
             ax[iax].set_ylabel(r'$\mathcal{M}_{2}(g)$', fontsize=18)
-            ax[iax].set_ylim(-0.45, 1.4e12)  # Set y-axis limit for M2(g)
+            ax[iax].set_ylim(-0.1e11, 1.4e12)  # Set y-axis limit for M2(g)
         if iax==0:
             ax[iax].legend(prop={'size': 20})
     if 'save_path' in savefig_dict.keys():
