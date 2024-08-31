@@ -99,7 +99,7 @@ def plot_ps_samples(kvals, samplist, names, cols=['b', 'r'], logscale=True, k2pk
     if k2pk:
         plt.ylabel(r'$k^2P(k)$')
         if not logscale:
-            plt.ylim(bottom=None, top=170000)
+            plt.ylim(bottom=-1000, top=170000)
         else:
             plt.ylim(bottom=None, top=10**6)
     else:
