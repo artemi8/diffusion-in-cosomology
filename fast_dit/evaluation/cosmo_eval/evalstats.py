@@ -98,8 +98,14 @@ def plot_ps_samples(kvals, samplist, names, cols=['b', 'r'], logscale=True, k2pk
     plt.xlabel(r'k')
     if k2pk:
         plt.ylabel(r'$k^2P(k)$')
+        if not logscale:
+            plt.ylim(5000, 150000)
+        else:
+            plt.ylim(bottom=None, top=10**6)
     else:
         plt.ylabel(r'P(k)')
+        if logscale:
+            plt.ylim(bottom=None, top=10**6)
     plt.legend()
     if 'save_path' in savefig_dict.keys():
         plt.savefig(savefig_dict['save_path'], dpi=savefig_dict['dpi'] if 'dpi' in savefig_dict else 100, bbox_inches='tight')
@@ -184,6 +190,7 @@ def save_power_spectrum_ratio(k, Pk1, Pk2, save_path):
     plt.ylabel('Power Spectrum Ratio [$P_{original}(k) / P_{generated}(k)$ ]', fontsize=12)
     plt.title('Power Spectrum Ratio', fontsize=16)
     plt.xscale('log')
+    plt.ylim(0.00, 2.00)  # Set the y-axis limit to 0.00 to 2.00
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)
     plt.tight_layout()
     # plt.show()
@@ -217,10 +224,13 @@ def plot_mink_functionals(samplist, gs_vals, names, cols, savefig_dict={}):
         ax[iax].set_xlabel('g')
         if iax==0:
             ax[iax].set_ylabel(r'$\mathcal{M}_{0}(g)$', fontsize=18)
+            ax[iax].set_ylim(0.00, 0.40)  # Set y-axis limit for M0(g)
         elif iax==1:
             ax[iax].set_ylabel(r'$\mathcal{M}_{1}(g)$', fontsize=18)
+            ax[iax].set_ylim(0.00, 0.08)  # Set y-axis limit for M1(g)
         else:
             ax[iax].set_ylabel(r'$\mathcal{M}_{2}(g)$', fontsize=18)
+            ax[iax].set_ylim(-0.25, 1.4e12)  # Set y-axis limit for M2(g)
         if iax==0:
             ax[iax].legend(prop={'size': 20})
     if 'save_path' in savefig_dict.keys():
