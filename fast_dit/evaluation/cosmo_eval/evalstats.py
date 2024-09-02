@@ -127,6 +127,8 @@ def get_powspec_for_samples(samplist, box_size=1000, MAS='CIC'):
     ps_list = []
     # Nx = samplist[0].shape[-1]
     kvals = []
+    inner_shape = []
+    outer_shape = []
     for samp in samplist:
         assert len(samp.shape)==3
         temp_pk = []
@@ -136,8 +138,12 @@ def get_powspec_for_samples(samplist, box_size=1000, MAS='CIC'):
             Pk2D = PKL.Pk_plane(single_samp.astype('float32'), BoxSize, MAS, threads)
             kvals = Pk2D.k      #k in h/Mpc
             temp_pk.append(Pk2D.Pk)     #Pk in (Mpc/h)^2
+            inner_shape.append(np.array(Pk2D.Pk).shape)
         # ps_list.append(np.mean(np.array(temp_pk), axis=0))
         ps_list.append(temp_pk)
+        outer_shape.append(np.array(temp_pk).shape)
+    print(f'Inner shape : {inner_shape}')
+    print(f'Outer shape : {outer_shape}')
 
     return kvals, np.array(ps_list)
 
