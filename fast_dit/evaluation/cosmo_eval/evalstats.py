@@ -170,9 +170,9 @@ def mean_absolute_fractional_difference(Pk1, Pk2, save_path):
     
     mean_abs_frac_diff = np.mean(fractional_diff)
 
-    save_path = os.path.join(save_path, 'MAFD.txt')
+    mafd_save_path = os.path.join(save_path, 'MAFD.txt')
 
-    with open(save_path, 'w') as f:
+    with open(mafd_save_path, 'w') as f:
         f.write(f'MAFD : {mean_abs_frac_diff}')
     # Plot the percentage difference
     plt.figure(figsize=(8, 6))
