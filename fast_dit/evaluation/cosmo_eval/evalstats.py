@@ -159,11 +159,14 @@ def calc_1dps_img2d(kvals, img, to_plot=True, smoothed=0.5):
 
 def mean_absolute_fractional_difference(Pk1, Pk2, save_path):
     
+    # Takes mean of all the power spectrums calculated for each images
     average_Pk1 = np.mean(Pk1, axis=0)
     average_Pk2 = np.mean(Pk2, axis=0)
     
     
     fractional_diff = np.abs(average_Pk2 - average_Pk1) / average_Pk1
+    # Convert fractional difference to percentage difference
+    percentage_diff = fractional_diff * 100
     
     mean_abs_frac_diff = np.mean(fractional_diff)
 
@@ -171,12 +174,24 @@ def mean_absolute_fractional_difference(Pk1, Pk2, save_path):
 
     with open(save_path, 'w') as f:
         f.write(f'MAFD : {mean_abs_frac_diff}')
+    # Plot the percentage difference
+    plt.figure(figsize=(8, 6))
+    plt.plot(percentage_diff, label='Percentage Difference')
+    plt.xlabel('Wavenumber Index (k)')
+    plt.ylabel('Percentage Difference (%)')
+    plt.title('Percentage Difference between Real and Synthetic Power Spectra')
+    plt.legend()
 
+    # Save the plot
+    plot_save_path = os.path.join(save_path, 'percentage_difference_plot.png')
+    plt.savefig(plot_save_path)
+    plt.close()
     
     return mean_abs_frac_diff
 
 def save_power_spectrum_ratio(k, Pk1, Pk2, save_path):
 
+    # Takes mean of all the power spectrums calculated for each images
     average_Pk1 = np.mean(Pk1, axis=0)
     average_Pk2 = np.mean(Pk2, axis=0)
 
