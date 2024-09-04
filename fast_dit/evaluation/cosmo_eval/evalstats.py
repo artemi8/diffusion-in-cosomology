@@ -179,7 +179,7 @@ def mean_absolute_fractional_difference(kvals, Pk1, Pk2, save_path):
     plt.plot(kvals, percentage_diff, label='Percentage Difference')
     plt.xlabel('Wavenumber Index (k)')
     plt.ylabel('Percentage Difference (%)')
-    plt.ylim(bottom=0, top=5)
+    plt.ylim(bottom=0, top=20)
     plt.title('Percentage Difference between Real and Synthetic Power Spectra')
     plt.legend()
 
