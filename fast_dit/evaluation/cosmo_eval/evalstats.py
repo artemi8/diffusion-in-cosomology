@@ -157,7 +157,7 @@ def calc_1dps_img2d(kvals, img, to_plot=True, smoothed=0.5):
     mean = np.vectorize(filt)(kvals)
     return mean
 
-def mean_absolute_fractional_difference(Pk1, Pk2, save_path):
+def mean_absolute_fractional_difference(kvals, Pk1, Pk2, save_path):
     
     # Takes mean of all the power spectrums calculated for each images
     average_Pk1 = np.mean(Pk1, axis=0)
@@ -176,7 +176,7 @@ def mean_absolute_fractional_difference(Pk1, Pk2, save_path):
         f.write(f'MAFD : {mean_abs_frac_diff}')
     # Plot the percentage difference
     plt.figure(figsize=(8, 6))
-    plt.plot(percentage_diff, label='Percentage Difference')
+    plt.plot(kvals, percentage_diff, label='Percentage Difference')
     plt.xlabel('Wavenumber Index (k)')
     plt.ylabel('Percentage Difference (%)')
     plt.ylim(bottom=0, top=5)
@@ -283,7 +283,7 @@ def generate_ps(ps_samp_list, save_path, box_size=1000, MAS='CIC'):
 
     kvals, powspeclist = get_powspec_for_samples(ps_samp_list, box_size, MAS)
 
-    mean_absolute_fractional_difference(powspeclist[0], powspeclist[1], save_path)
+    mean_absolute_fractional_difference(kvals, powspeclist[0], powspeclist[1], save_path)
     # save_power_spectrum_ratio(kvals, powspeclist[0], powspeclist[1], save_path)
 
     # #Saving with log=True and k2pk=False
