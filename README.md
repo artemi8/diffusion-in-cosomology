@@ -52,7 +52,7 @@ torchrun --nnodes=1 --nproc_per_node=N sample_ddp.py --model DiT-XL/2 --num-fid-
 
 There are several additional options; see [`sample_ddp.py`](sample_ddp.py) for details.
 
-TO run the evaluation suite to test the model run:
+To run the evaluation suite to test the model run:
 
 ```bash
 python fast_dit/evaluation/cosmo_eval/evalstats.py --real_samples real/data/path/folder --gen_samples genereated/data/path/folder --save_path save/path/folder/ --pixel_min 10 --pixel_max 150 --num_samples 5000 --box_size 1000 --MAS CIC
