@@ -284,24 +284,24 @@ def generate_ps(ps_samp_list, save_path, box_size=1000, MAS='CIC'):
     kvals, powspeclist = get_powspec_for_samples(ps_samp_list, box_size, MAS)
 
     mean_absolute_fractional_difference(kvals, powspeclist[0], powspeclist[1], save_path)
-    # save_power_spectrum_ratio(kvals, powspeclist[0], powspeclist[1], save_path)
+    save_power_spectrum_ratio(kvals, powspeclist[0], powspeclist[1], save_path)
 
-    # #Saving with log=True and k2pk=False
-    # plot_ps_samples(kvals, powspeclist, names=['Real Fields', 'Sampled Fields'], 
-    #         savefig_dict={'save_path': os.path.join(save_path, 'log_powspec64_ckp60.png'),
-    #                        'figsize': [5, 4]})
+    #Saving with log=True and k2pk=False
+    plot_ps_samples(kvals, powspeclist, names=['Real Fields', 'Sampled Fields'], 
+            savefig_dict={'save_path': os.path.join(save_path, 'log_powspec64_ckp60.png'),
+                           'figsize': [5, 4]})
     
-    # #Saving with log=True and k2pk=True
-    # plot_ps_samples(kvals, powspeclist, names=['Real Fields', 'Sampled Fields'],
-    #                  k2pk=True, logscale=True,
-    #                 savefig_dict={'save_path': os.path.join(save_path, 'k2pk-log64_ckp60.png'),
-    #                                'figsize': [5, 4]})
+    #Saving with log=True and k2pk=True
+    plot_ps_samples(kvals, powspeclist, names=['Real Fields', 'Sampled Fields'],
+                     k2pk=True, logscale=True,
+                    savefig_dict={'save_path': os.path.join(save_path, 'k2pk-log64_ckp60.png'),
+                                   'figsize': [5, 4]})
     
-    # #Saving with log=False and k2pk=True
-    # plot_ps_samples(kvals, powspeclist, names=['Real Fields', 'Sampled Fields'],
-    #                  k2pk=True, logscale=False,
-                    #  savefig_dict={'save_path': os.path.join(save_path, 'k2pk_64_ckp60.png'),
-                    #                'figsize': [5, 4]})
+    #Saving with log=False and k2pk=True
+    plot_ps_samples(kvals, powspeclist, names=['Real Fields', 'Sampled Fields'],
+                     k2pk=True, logscale=False,
+                     savefig_dict={'save_path': os.path.join(save_path, 'k2pk_64_ckp60.png'),
+                                   'figsize': [5, 4]})
 
 def generate_mink_funcs(samp_list, RANGEMIN, RANGEMAX, save_path):
 
@@ -343,20 +343,20 @@ if __name__ == "__main__":
     datapath_kwargs = {'real_sample_dir': args.real_samples,
                    'gen_sample_dir' : args.gen_samples}
     
-    # samp_list = gen_samplelist(datapath_kwargs=datapath_kwargs ,
-    #                        num_samples=args.num_samples, 
-    #                        power_spectrum=False)
+    samp_list = gen_samplelist(datapath_kwargs=datapath_kwargs ,
+                           num_samples=args.num_samples, 
+                           power_spectrum=False)
     
-    # print(f'Generating statistics using following configuation : {args}')
+    print(f'Generating statistics using following configuation : {args}')
 
-    # print('Generating pixel Intesity Histogram')
-    # generate_PIH(samp_list, args.pixel_min, args.pixel_max, args.save_path)
+    print('Generating pixel Intesity Histogram')
+    generate_PIH(samp_list, args.pixel_min, args.pixel_max, args.save_path)
 
-    # print(f'Generating periodicity plots for {args.periodicity_num_samples} samples')
-    # generate_periodicity_plot(samp_list[1], args.periodicity_num_samples, args.save_path)
+    print(f'Generating periodicity plots for {args.periodicity_num_samples} samples')
+    generate_periodicity_plot(samp_list[1], args.periodicity_num_samples, args.save_path)
 
-    # print('Generating Minkowski functionals')
-    # generate_mink_funcs(samp_list, args.pixel_min, args.pixel_max, args.save_path)
+    print('Generating Minkowski functionals')
+    generate_mink_funcs(samp_list, args.pixel_min, args.pixel_max, args.save_path)
 
     samp_list = gen_samplelist(datapath_kwargs=datapath_kwargs,
                            num_samples=args.num_samples, 

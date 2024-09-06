@@ -1,0 +1,44 @@
+DiT-B2:
+  input_size: 32
+  patch_size: 2
+  in_channels: 4
+  hidden_size: 768
+  depth: 12
+  num_heads: 12
+  mlp_ratio: 4.0
+  class_dropout_prob: 0.1
+  num_classes: 1000
+  learn_sigma: True
+
+DiT-B4:
+  input_size: 32
+  patch_size: 4
+  in_channels: 4
+  hidden_size: 768
+  depth: 12
+  num_heads: 12
+  mlp_ratio: 4.0
+  class_dropout_prob: 0.1
+  num_classes: 1000
+  learn_sigma: True
+
+DiT-B8:
+  input_size: 32
+  patch_size: 8
+  in_channels: 4
+  hidden_size: 768
+  depth: 12
+  num_heads: 12
+  mlp_ratio: 4.0
+  class_dropout_prob: 0.1
+  num_classes: 1000
+  learn_sigma: True
+
+Training_Details:
+  sampling_steps: "randomly chosen between 250-1000"
+  loss_function: "Mean Square Error (MSE)"
+  image_size: 512x512
+  epochs:
+    DiT-B4: 3000
+    DiT-B2: "early stopped at 1130"
+    DiT-B8: "early stopped at 2300"
