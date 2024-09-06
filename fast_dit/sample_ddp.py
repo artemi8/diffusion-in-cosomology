@@ -23,13 +23,6 @@ from PIL import Image
 import numpy as np
 import math
 import argparse
-from ditutils.transforms import GlobalMinMaxScaleTransform, Log1pTransform, InverseNormalize, to_numpy, channel_average, clip_and_average
-import numpy as np
-from evaluation import compare_power_spectra
-from torchvision import transforms
-import matplotlib.pyplot as plt
-
-
 
 
 def create_npz_from_sample_folder(sample_dir, num=50_000):
@@ -93,11 +86,8 @@ def main(args):
     folder_name = f"{model_string_name}-{ckpt_string_name}-size-{args.image_size}-vae-{args.vae}-" \
                   f"cfg-{args.cfg_scale}-seed-{args.global_seed}"
     sample_folder_dir = f"{args.sample_dir}/{folder_name}"
-    npy_folder_directory = os.path.join(sample_folder_dir, 'numpy_arrays')
-    images_folder_directory = os.path.join(sample_folder_dir, 'images')
     if rank == 0:
-        os.makedirs(images_folder_directory, exist_ok=True)
-        os.makedirs(npy_folder_directory, exist_ok=True)
+        os.makedirs(sample_folder_dir, exist_ok=True)
         print(f"Saving .png samples at {sample_folder_dir}")
     dist.barrier()
 
@@ -139,33 +129,19 @@ def main(args):
             samples, _ = samples.chunk(2, dim=0)  # Remove null class samples
 
         samples = vae.decode(samples / 0.18215).sample
-            # Compose the inverse transformations
+        samples = torch.clamp(127.5 * samples + 128.0, 0, 255).permute(0, 2, 3, 1).to("cpu", dtype=torch.uint8).numpy()
 
-        inverse_transform = transforms.Compose([
-        InverseNormalize(mean=[0.5], std=[0.5]),                       
-        GlobalMinMaxScaleTransform(global_min=0, global_max=33.57658438451577).inverse_transform,  
-        Log1pTransform().inverse_transform,
-        to_numpy,
-        channel_average                                         
-        ])
-        samples = inverse_transform(samples)
-        # samples = torch.clamp(127.5 * samples + 128.0, 0, 255).permute(0, 2, 3, 1).to("cpu", dtype=torch.uint8).numpy()
-        
         # Save samples to disk as individual .png files
         for i, sample in enumerate(samples):
             index = i * dist.get_world_size() + rank + total
-            np.save(f"{npy_folder_directory}/{index:06d}.npy", sample)
-            plt.imsave(f"{images_folder_directory}/{index:06d}.png",
-                        sample, cmap='gnuplot', vmin=0.0, vmax=1e13)
-
-            # Image.fromarray(sample).save(f"{sample_folder_dir}/{index:06d}.png")
+            Image.fromarray(sample).save(f"{sample_folder_dir}/{index:06d}.png")
         total += global_batch_size
 
     # Make sure all processes have finished saving their samples before attempting to convert to .npz
-    # dist.barrier()
-    # if rank == 0:
-    #     create_npz_from_sample_folder(sample_folder_dir, args.num_fid_samples)
-    #     print("Done.")
+    dist.barrier()
+    if rank == 0:
+        create_npz_from_sample_folder(sample_folder_dir, args.num_fid_samples)
+        print("Done.")
     dist.barrier()
     dist.destroy_process_group()
 

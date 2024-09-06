@@ -26,20 +26,15 @@ from time import time
 import argparse
 import logging
 import os
-import cv2
 
 from models import DiT_models
 from diffusion import create_diffusion
 from diffusers.models import AutoencoderKL
-from ditutils.transforms import GlobalMinMaxScaleTransform, Log1pTransform, DuplicateDim, ToTensorNoScaling
-#import numpy as np
+
 
 #################################################################################
 #                             Training Helper Functions                         #
 #################################################################################
-
-
-
 
 @torch.no_grad()
 def update_ema(ema_model, model, decay=0.9999):
@@ -107,10 +102,6 @@ def center_crop_arr(pil_image, image_size):
     crop_x = (arr.shape[1] - image_size) // 2
     return Image.fromarray(arr[crop_y: crop_y + image_size, crop_x: crop_x + image_size])
 
-def tiff_loader(path: str) -> np.ndarray:
-    return cv2.imread(path, cv2.IMREAD_UNCHANGED)
-
-
 
 #################################################################################
 #                                  Training Loop                                #
@@ -143,21 +134,16 @@ def main(args):
     latent_size = args.image_size // 8
     vae = AutoencoderKL.from_pretrained(f"stabilityai/sd-vae-ft-{args.vae}").to(device)
 
+    # transforms.Lambda(lambda pil_image: center_crop_arr(pil_image, args.image_size)),
     # Setup data:
-    #transforms.Lambda(lambda pil_image: center_crop_arr(pil_image, args.image_size)),
-
     transform = transforms.Compose([
-            ToTensorNoScaling(),
-            transforms.RandomHorizontalFlip(),
-            Log1pTransform(),
-            GlobalMinMaxScaleTransform(global_min=0, global_max=33.57658438451577, min_val=0, max_val=1),
-            DuplicateDim(),
-            transforms.Normalize(mean=[0.5], std=[0.5], inplace=True)
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5], inplace=True)
     ])
-    
-    dataset = ImageFolder(args.data_path, transform=transform, loader=tiff_loader)
+    dataset = ImageFolder(args.data_path, transform=transform)
     sampler = DistributedSampler(
-        dataset,        
+        dataset,
         num_replicas=dist.get_world_size(),
         rank=rank,
         shuffle=False,

@@ -1,6 +1,7 @@
 
 import torch
 import numpy as np
+import os
 
 
 class Log1pTransform:
@@ -23,9 +24,15 @@ class InverseNormalize:
 
 
 class GlobalMinMaxScaleTransform:
-    def __init__(self, global_min, global_max, min_val=0, max_val=1):
-        self.global_min = global_min
-        self.global_max = global_max
+    def __init__(self, data_path, global_min=None, global_max=None, min_val=0, max_val=1):
+
+        if global_min is None and global_max is None:
+            self.global_min = global_min
+            self.global_max = global_max
+
+        else:
+            self.data_path = data_path
+            self.find_min_max()
         self.min_val = min_val
         self.max_val = max_val
     
@@ -37,6 +44,25 @@ class GlobalMinMaxScaleTransform:
         # Inverse min-max scaling
         original_x = (scaled_x - self.min_val) / (self.max_val - self.min_val)
         return original_x * (self.global_max - self.global_min) + self.global_min
+    
+    def find_min_max(self):
+        all_min_values = []
+        all_max_values = []
+
+        # Get list of all .npy files in the folder
+        npy_files = [f for f in os.listdir(self.data_path) if f.endswith('.npy')]
+
+        for npy_file in npy_files:
+            # Load the .npy file
+            array = np.load(os.path.join(self.data_path, npy_file))
+
+            # Calculate min and max in a vectorized way
+            all_min_values.append(np.min(np.log1p(array)))
+            all_max_values.append(np.max(np.log1p(array)))
+
+        # Find the overall min and max
+        global_min = min(all_min_values)
+        global_max = max(all_max_values)
     
 
 class DuplicateDim:
